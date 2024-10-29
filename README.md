@@ -3,6 +3,7 @@
 <h3><a href="https://www.notion.so/12e1563ef7ee8004b09af7fde78e1328?v=12e1563ef7ee8101bd9e000c70061965">
       📜 REST API 명세서</a></h3>
 <br/>
+
 ## 목차
 <details open>
   <summary><h2>📋 Table of Contents</h2></summary>
@@ -89,7 +90,7 @@
 <br/>
 
 ## 프로젝트 구조
-![프로젝트 구조](https://github.com/jihohyeseong/SBS/blob/main/image/27%EC%A1%B0_%EC%9D%B4%EB%AF%B8%EC%A7%80_%EC%A3%BC%EC%9A%94%20%EC%A0%81%EC%9A%A9%20%EA%B8%B0%EC%88%A0%20%EB%B0%8F%20%EA%B5%AC%EC%A1%B0.jpg)
+![프로젝트 구조](https://github.com/jihohyeseong/Ideal-Worldcup/blob/main/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EA%B5%AC%EC%A1%B0.png)
 <br/>
 
 ## 구현화면
