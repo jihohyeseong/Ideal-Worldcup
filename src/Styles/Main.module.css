@@ -1,0 +1,285 @@
+.loader {
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  margin-top: 100px;
+  border-radius: 50%;
+  background: #25b09b;
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+button.learn_more {
+  width: 12rem;
+  height: auto;
+}
+
+button.learn_more .circle {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 3rem;
+  height: 3rem;
+  background: gray;
+  border-radius: 1.625rem;
+}
+
+button.learn_more .circle .icon_arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #fff;
+}
+
+button.learn_more .circle .icon_arrow {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  left: 0.625rem;
+  width: 1.125rem;
+  height: 0.125rem;
+  background: none;
+}
+
+button.learn_more .circle .icon_arrow::before {
+  position: absolute;
+  content: "";
+  top: -0.29rem;
+  right: 0.0625rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-top: 0.125rem solid #fff;
+  border-right: 0.125rem solid #fff;
+  transform: rotate(45deg);
+}
+
+button.learn_more .button_text {
+  transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.75rem 0;
+  margin: 0 0 0 1.85rem;
+  color: #2db9b2;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+button:hover .circle {
+  width: 100%;
+}
+
+button:hover .circle .icon_arrow {
+  background: #fff;
+  transform: translate(1rem, 0);
+}
+
+button:hover .button_text {
+  color: #fff;
+}
+
+/* .input {
+  border-radius: 10px;
+  outline: 2px solid gray;
+  border: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  outline-offset: 3px;
+  padding: 10px 1rem;
+  transition: 0.25s;
+  width: 250px;
+  margin-left: 10px;
+  margin-right: 20px;
+}
+
+.input:focus {
+  outline-offset: 5px;
+  background-color: #fff
+} */
+
+/* From Uiverse.io by Praashoo7 */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-left: 2em;
+  padding-right: 2em;
+  padding-bottom: 0.4em;
+  background-color: transparent;
+  border: 2px solid grey;
+  border-radius: 25px;
+  transition: 0.4s ease-in-out;
+  width: 800px;
+  height: 400px;
+  justify-content: center;
+  align-items: center;
+
+  max-height: 400px; /* 최대 높이 설정 */
+}
+
+.memberContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%; /* 멤버 입력 필드의 너비를 100%로 설정 */
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  border-radius: 25px;
+  width: 250px;
+  padding: 0.6em;
+  border: none;
+  outline: none;
+  color: white;
+  background-color: #171717;
+  box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+
+  width: 100%; /* 필드의 너비를 100%로 설정 */
+}
+
+.input_icon {
+  height: 1.3em;
+  width: 1.96em;
+  fill: white;
+}
+
+.input_field {
+  background: none;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: #d3d3d3;
+}
+
+.form .btn {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-top: 2.5em;
+}
+
+.button1 {
+  padding: 0.5em;
+  padding-left: 1.1em;
+  padding-right: 1.1em;
+  border-radius: 5px;
+  margin-right: 0.5em;
+  border: none;
+  outline: none;
+  transition: 0.4s ease-in-out;
+  background-color: #252525;
+  color: white;
+}
+
+.button1:hover {
+  background-color: black;
+  color: white;
+}
+
+.button2 {
+  padding: 0.5em;
+  padding-left: 2.3em;
+  padding-right: 2.3em;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  transition: 0.4s ease-in-out;
+  background-color: #252525;
+  color: white;
+}
+
+.button2:hover {
+  background-color: black;
+  color: white;
+}
+
+.button3 {
+  margin-bottom: 3em;
+  padding: 0.5em;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  transition: 0.4s ease-in-out;
+  background-color: #252525;
+  color: white;
+}
+
+.button3:hover {
+  background-color: red;
+  color: white;
+}
+
+/* 파일업로드  버튼 */
+.file_upload_form {
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.file_upload_label input {
+  display: none;
+}
+.file_upload_label svg {
+  height: 40px;
+  fill: rgb(82, 82, 82);
+  margin-bottom: 20px;
+}
+.file_upload_label {
+  cursor: pointer;
+  background-color: #171717;
+  width: 200px;
+  height: 145px;
+  padding: 30px 70px;
+  border-radius: 40px;
+  border: 2px rgb(82, 82, 82);
+  box-shadow: 0px 0px 200px -50px rgba(0, 0, 0, 0.719);
+}
+.file_upload_design {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.browse_button {
+  background-color: rgb(82, 82, 82);
+  padding: 5px 15px;
+  border-radius: 10px;
+  color: white;
+  transition: all 0.3s;
+}
+.browse_button:hover {
+  background-color: rgb(14, 14, 14);
+}
