@@ -31,7 +31,7 @@
 
 ## 새로 적용한 기능
 + **SPRINGBOOT** : 세션기반 로그인 방식에서 단일 토큰 JWT 로그인 방식으로 변경, 필드주입방식에서 생성자 주입 방식으로 변경
-+ **REACT** : 자바스크립트에서 타입스크립트로 변경
++ **REACT** : JS에서 TS/TSX로 변경, Styled-Component를 사용해서 CSS 구현,  React-Query, Atom, Recoil, React-Animation 사용
 <br/>
 <br/>
 
