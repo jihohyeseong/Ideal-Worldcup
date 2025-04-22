@@ -51,7 +51,7 @@ public class WorldcupService {
     }
 
     public String saveImage(MultipartFile image) throws IOException {
-        String folderPath = "C:/Spring/springJWT/src/main/resources/static/images/";  // 원하는 경로로 변경하세요
+        String folderPath = "C:/Spring/upload/";  // 원하는 경로로 변경하세요
         String fileName = image.getOriginalFilename();
         Path imagePath = Paths.get(folderPath + fileName);
 
