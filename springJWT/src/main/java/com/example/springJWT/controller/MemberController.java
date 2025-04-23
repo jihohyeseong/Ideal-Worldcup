@@ -1,9 +1,11 @@
 package com.example.springJWT.controller;
 
+import com.example.springJWT.dto.CustomUserDetails;
 import com.example.springJWT.dto.MemberDto;
 import com.example.springJWT.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,35 +32,33 @@ public class MemberController {
     }
 
     @GetMapping("/{id}/random")
-    public ResponseEntity<List<MemberDto>> getRandomMembers(@PathVariable Long id){
+    public ResponseEntity<List<MemberDto>> getRandomMembers(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails){
 
-        List<MemberDto> memberDtoList = memberService.getTwoRandomMembers(id);
+        String username = userDetails.getUsername();
+        List<MemberDto> memberDtoList = memberService.getTwoRandomMembers(id, username);
 
         return ResponseEntity.status(HttpStatus.OK).body(memberDtoList);
     }
 
     @PostMapping("/reset") // excludedIds 초기화
-    public void resetExcludedMembers(){
+    public void resetExcludedMembers(@AuthenticationPrincipal CustomUserDetails userDetails){
 
-        memberService.resetExcludedMembers();
+        String username = userDetails.getUsername();
+        memberService.resetExcludedMembers(username);
     }
 
     @PostMapping("/select/{id}")
-    public void win(@PathVariable Long id){
+    public void win(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails){
 
-        memberService.win(id);
+        String username = userDetails.getUsername();
+        memberService.win(id, username);
     }
 
     @PostMapping("/next")
-    public void goNextRound(){
+    public void goNextRound(@AuthenticationPrincipal CustomUserDetails userDetails){
 
-        memberService.goNextRound();
-    }
-
-    @PostMapping("/clear/{id1}/{id2}")
-    public void clearLoseNum(@PathVariable Long id1, @PathVariable Long id2){
-
-        memberService.clearLoseNum(id1, id2);
+        String username = userDetails.getUsername();
+        memberService.goNextRound(username);
     }
 
     @PostMapping("/{worldcupId}")
