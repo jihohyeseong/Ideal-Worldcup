@@ -1,10 +1,12 @@
 package com.example.springJWT.service;
 
 import com.example.springJWT.dto.MemberDto;
-import com.example.springJWT.entity.Member;
-import com.example.springJWT.entity.Worldcup;
+import com.example.springJWT.entity.Member_WC;
+import com.example.springJWT.entity.Worldcup_WC;
 import com.example.springJWT.repository.MemberRepository;
 import com.example.springJWT.repository.WorldcupRepository;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,11 +24,17 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final WorldcupRepository worldcupRepository;
-    Long game = 0L;
+    private final Map<String, UserGameState> gameStates = new HashMap<>();
 
-    private final List<Long> excludedIds = new ArrayList<>();
-    private final List<Long> winIds = new ArrayList<>();
-    private final Random random = new Random();
+    @Getter
+    @Setter
+    private static class UserGameState {
+        private List<Long> winIds = new ArrayList<>();
+        private Long game = 0L;
+        private int index = 0;
+        private List<Member_WC> members = new ArrayList<>();
+    }
+
 
     public MemberService(MemberRepository memberRepository, WorldcupRepository worldcupRepository){
 
@@ -39,117 +45,116 @@ public class MemberService {
     @Transactional
     public List<MemberDto> getAllMembers(Long id) {
 
-        List<Member> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
+        List<Member_WC> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
         List<MemberDto> memberDtoList = new ArrayList<>();
 
-        for(Member m : members){
-            MemberDto dto = Member.createMemberDto(m);
+        for(Member_WC m : members){
+            MemberDto dto = Member_WC.createMemberDto(m);
             memberDtoList.add(dto);
         }
 
-        Worldcup worldcup = worldcupRepository.findById(id).orElse(null);
+        Worldcup_WC worldcup = worldcupRepository.findById(id).orElse(null);
         worldcup.setViewsCount(worldcup.getViewsCount() + 1L);
         worldcupRepository.save(worldcup);
 
         return memberDtoList;
     }
 
-    @Transactional
-    public List<MemberDto> getTwoRandomMembers(Long id){
-
-        if(game != (winIds.size())){
-            excludedIds.remove(excludedIds.size() -1);
-            excludedIds.remove(excludedIds.size() -1);
-        }
-        else {
-            game = game + 1L;
-        }
+    public List<Member_WC> gameStart(Long id){
 
         // 데이터베이스에서 모든 멤버를 가져옴
-        List<Member> allMembers = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
+        List<Member_WC> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
 
-        System.out.println(excludedIds);
-
-        // 제외된 멤버를 필터링하여 가져옴
-        List<Member> eligibleMembers = allMembers.stream()
-                .filter(member -> !excludedIds.contains(member.getId()))
-                .collect(Collectors.toList());
-
-        if (eligibleMembers.size() == 2) {
-            Member member1 = eligibleMembers.get(0);
-            Member member2 = eligibleMembers.get(1);
-
-            member1.setLoseNum(member1.getLoseNum() + 1L);
-            member2.setLoseNum(member2.getLoseNum() + 1L);
-            excludedIds.addAll(eligibleMembers.stream().map(Member::getId).toList());
-            return eligibleMembers.stream()
-                    .map(Member::createMemberDto)
-                    .collect(Collectors.toList());
+        if(members.size() < 2)
+            return Collections.emptyList();
+        else if(members.size() < 4) {
+            Collections.shuffle(members);
+            members = members.subList(0, 2);
+        }
+        else if(members.size() < 8) {
+            Collections.shuffle(members);
+            members = members.subList(0, 4);
+        }
+        else if(members.size() < 16) {
+            Collections.shuffle(members);
+            members = members.subList(0, 8);
+        }
+        else if(members.size() < 32) {
+            Collections.shuffle(members);
+            members = members.subList(0, 16);
+        }
+        else{
+            Collections.shuffle(members);
+            members = members.subList(0, 32);
         }
 
-        if (eligibleMembers.size() == 1) {
-
-            excludedIds.addAll(eligibleMembers.stream().map(Member::getId).toList());
-            return eligibleMembers.stream()
-                    .map(Member::createMemberDto)
-                    .collect(Collectors.toList());
-        }
-
-        // 유효한 멤버 중 두 개를 랜덤으로 선택
-        List<MemberDto> selectedMembers = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            int randomIndex = random.nextInt(eligibleMembers.size());
-            Member selectedMember = eligibleMembers.get(randomIndex);
-
-            selectedMember.setLoseNum(selectedMember.getLoseNum() + 1L);
-            memberRepository.save(selectedMember);
-
-            // 선택된 멤버를 DTO로 변환하여 결과 목록에 추가
-            selectedMembers.add(Member.createMemberDto(selectedMember));
-
-            // 선택된 멤버의 ID를 제외 목록에 추가
-            excludedIds.add(selectedMember.getId());
-
-            // 선택된 멤버를 유효한 목록에서 제거
-            eligibleMembers.remove(randomIndex);
-        }
-
-        return selectedMembers;
-    }
-
-    public void resetExcludedMembers(){
-
-        excludedIds.clear();
-        winIds.clear();
-        game = 0L;
+        return members;
     }
 
     @Transactional
-    public void goNextRound() {
+    public List<MemberDto> getTwoRandomMembers(Long id, String username){
 
-        for(Long id : winIds){
+        gameStates.putIfAbsent(username, new UserGameState());
 
-            excludedIds.remove(id);
+        if(gameStates.get(username).getGame() == 0) {
+            gameStates.get(username).setMembers(gameStart(id));
+            gameStates.get(username).setGame(1L);
         }
-        if(winIds.size() == 1){
 
-            Long id = winIds.get(0);
-            Member member = memberRepository.findById(id).orElse(null);
+        if(gameStates.get(username).getIndex() == gameStates.get(username).getMembers().size())
+            return Collections.emptyList();
+
+        if(gameStates.get(username).getMembers().size() == 1) {
+            return gameStates.get(username).getMembers().stream().map(Member_WC::createMemberDto).collect(Collectors.toList());
+        }
+
+        List<Member_WC> selected = new ArrayList<>();
+        for(int i = 0; i < 2; i++){
+            Member_WC member = gameStates.get(username).getMembers().get(gameStates.get(username).getIndex());
+            selected.add(member);
+            member.setLoseNum(member.getLoseNum() + 1);
+            memberRepository.save(member);
+            gameStates.get(username).setIndex(gameStates.get(username).getIndex() + 1);
+        }
+
+        return selected.stream().map(Member_WC::createMemberDto).collect(Collectors.toList());
+    }
+
+    public void resetExcludedMembers(String username){
+
+        if(gameStates.get(username) != null) {
+            gameStates.get(username).getWinIds().clear();
+            gameStates.get(username).setIndex(0);
+            gameStates.get(username).setGame(0L);
+            gameStates.get(username).getMembers().clear();
+        }
+    }
+
+    @Transactional
+    public void goNextRound(String username) {
+
+        if(gameStates.get(username).getWinIds().size() == 1){
+
+            Long id = gameStates.get(username).getWinIds().get(0);
+            Member_WC member = memberRepository.findById(id).orElse(null);
             member.setVictoryNum(member.getVictoryNum() + 1L);
             memberRepository.save(member);
         }
-        winIds.clear();
-        game = 0L;
+        gameStates.get(username).setIndex(0);
+        List<Member_WC> winMembers = memberRepository.findAllById(gameStates.get(username).getWinIds());
+        Collections.shuffle(winMembers);
+        gameStates.get(username).setMembers(winMembers);
+        gameStates.get(username).winIds.clear();
     }
 
     @Transactional
-    public void win(Long id) {
+    public void win(Long id, String username) {
 
-        winIds.add(id);
-        Member member = memberRepository.findById(id).orElse(null);
+        gameStates.get(username).getWinIds().add(id);
+        System.out.println(gameStates.get(username).getWinIds());
+        Member_WC member = memberRepository.findById(id).orElse(null);
 
         member.setWinNum(member.getWinNum() + 1L);
-        member.setLoseNum(member.getLoseNum() - 1L);
         memberRepository.save(member);
     }
 
@@ -168,21 +173,13 @@ public class MemberService {
 
     public MemberDto createMember(Long worldcupId, MemberDto dto) {
 
-         Member member = MemberDto.toEntity(dto);
-         Worldcup worldcup = worldcupRepository.findById(worldcupId).orElse(null);
-         member.setWorldcup(worldcup);
+        Member_WC member = MemberDto.toEntity(dto);
+        Worldcup_WC worldcup = worldcupRepository.findById(worldcupId).orElse(null);
+        member.setWorldcup(worldcup);
 
-         Member created = memberRepository.save(member);
+        Member_WC created = memberRepository.save(member);
 
-         return Member.createMemberDto(created);
+        return Member_WC.createMemberDto(created);
     }
 
-    public void clearLoseNum(Long id1, Long id2) {
-
-        Member member1 = memberRepository.findById(id1).orElse(null);
-        Member member2 = memberRepository.findById(id2).orElse(null);
-
-        member1.setLoseNum(member1.getLoseNum() - 1L);
-        member2.setLoseNum(member2.getLoseNum() - 1L);
-    }
 }
