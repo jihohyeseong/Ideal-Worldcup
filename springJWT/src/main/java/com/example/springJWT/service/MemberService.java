@@ -1,8 +1,8 @@
 package com.example.springJWT.service;
 
 import com.example.springJWT.dto.MemberDto;
-import com.example.springJWT.entity.Member_WC;
-import com.example.springJWT.entity.Worldcup_WC;
+import com.example.springJWT.entity.Member;
+import com.example.springJWT.entity.Worldcup;
 import com.example.springJWT.repository.MemberRepository;
 import com.example.springJWT.repository.WorldcupRepository;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class MemberService {
         private List<Long> winIds = new ArrayList<>();
         private Long game = 0L;
         private int index = 0;
-        private List<Member_WC> members = new ArrayList<>();
+        private List<Member> members = new ArrayList<>();
     }
 
 
@@ -45,25 +45,25 @@ public class MemberService {
     @Transactional
     public List<MemberDto> getAllMembers(Long id) {
 
-        List<Member_WC> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
+        List<Member> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
         List<MemberDto> memberDtoList = new ArrayList<>();
 
-        for(Member_WC m : members){
-            MemberDto dto = Member_WC.createMemberDto(m);
+        for(Member m : members){
+            MemberDto dto = Member.createMemberDto(m);
             memberDtoList.add(dto);
         }
 
-        Worldcup_WC worldcup = worldcupRepository.findById(id).orElse(null);
+        Worldcup worldcup = worldcupRepository.findById(id).orElse(null);
         worldcup.setViewsCount(worldcup.getViewsCount() + 1L);
         worldcupRepository.save(worldcup);
 
         return memberDtoList;
     }
 
-    public List<Member_WC> gameStart(Long id){
+    public List<Member> gameStart(Long id){
 
         // 데이터베이스에서 모든 멤버를 가져옴
-        List<Member_WC> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
+        List<Member> members = memberRepository.findAllByWorldcup_IdOrderByVictoryNumDesc(id);
 
         if(members.size() < 2)
             return Collections.emptyList();
@@ -105,19 +105,19 @@ public class MemberService {
             return Collections.emptyList();
 
         if(gameStates.get(username).getMembers().size() == 1) {
-            return gameStates.get(username).getMembers().stream().map(Member_WC::createMemberDto).collect(Collectors.toList());
+            return gameStates.get(username).getMembers().stream().map(Member::createMemberDto).collect(Collectors.toList());
         }
 
-        List<Member_WC> selected = new ArrayList<>();
+        List<Member> selected = new ArrayList<>();
         for(int i = 0; i < 2; i++){
-            Member_WC member = gameStates.get(username).getMembers().get(gameStates.get(username).getIndex());
+            Member member = gameStates.get(username).getMembers().get(gameStates.get(username).getIndex());
             selected.add(member);
             member.setLoseNum(member.getLoseNum() + 1);
             memberRepository.save(member);
             gameStates.get(username).setIndex(gameStates.get(username).getIndex() + 1);
         }
 
-        return selected.stream().map(Member_WC::createMemberDto).collect(Collectors.toList());
+        return selected.stream().map(Member::createMemberDto).collect(Collectors.toList());
     }
 
     public void resetExcludedMembers(String username){
@@ -136,12 +136,12 @@ public class MemberService {
         if(gameStates.get(username).getWinIds().size() == 1){
 
             Long id = gameStates.get(username).getWinIds().get(0);
-            Member_WC member = memberRepository.findById(id).orElse(null);
+            Member member = memberRepository.findById(id).orElse(null);
             member.setVictoryNum(member.getVictoryNum() + 1L);
             memberRepository.save(member);
         }
         gameStates.get(username).setIndex(0);
-        List<Member_WC> winMembers = memberRepository.findAllById(gameStates.get(username).getWinIds());
+        List<Member> winMembers = memberRepository.findAllById(gameStates.get(username).getWinIds());
         Collections.shuffle(winMembers);
         gameStates.get(username).setMembers(winMembers);
         gameStates.get(username).winIds.clear();
@@ -152,7 +152,7 @@ public class MemberService {
 
         gameStates.get(username).getWinIds().add(id);
         System.out.println(gameStates.get(username).getWinIds());
-        Member_WC member = memberRepository.findById(id).orElse(null);
+        Member member = memberRepository.findById(id).orElse(null);
 
         member.setWinNum(member.getWinNum() + 1L);
         memberRepository.save(member);
@@ -173,13 +173,13 @@ public class MemberService {
 
     public MemberDto createMember(Long worldcupId, MemberDto dto) {
 
-        Member_WC member = MemberDto.toEntity(dto);
-        Worldcup_WC worldcup = worldcupRepository.findById(worldcupId).orElse(null);
+        Member member = MemberDto.toEntity(dto);
+        Worldcup worldcup = worldcupRepository.findById(worldcupId).orElse(null);
         member.setWorldcup(worldcup);
 
-        Member_WC created = memberRepository.save(member);
+        Member created = memberRepository.save(member);
 
-        return Member_WC.createMemberDto(created);
+        return Member.createMemberDto(created);
     }
 
 }
