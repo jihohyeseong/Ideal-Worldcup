@@ -90,7 +90,7 @@
 <br/>
 
 ## 프로젝트 구조
-![프로젝트 구조](https://github.com/jihohyeseong/Ideal-Worldcup/blob/main/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%EA%B5%AC%EC%A1%B0.png)
+![프로젝트 구조](https://github.com/jihohyeseong/Ideal-Worldcup/blob/main/images/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-04-28%20132213.png)
 <br/>
 
 ## 구현화면
